@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wordle Clone</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="controls">
+    <select id="language">
+      <option value="en">English</option>
+      <option value="fr">Français</option>
+      <option value="es">Español</option>
+    </select>
+
+    <select id="length">
+      <option value="3">3 letters</option>
+      <option value="4">4 letters</option>
+      <option value="5" selected>5 letters</option>
+      <option value="6">6 letters</option>
+    </select>
+
+    <button id="newGame">New Word</button>
+  </div>
+
+  <div id="board"></div>
+  <input type="text" id="guessInput" maxlength="6" placeholder="Type your guess" />
+  <button id="submitGuess">Submit</button>
+
+  <div id="feedback"></div>
+  <button id="defineBtn" style="display:none;">📖 Define</button>
+  <div id="definition"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
