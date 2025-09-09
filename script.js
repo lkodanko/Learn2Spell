@@ -43,7 +43,9 @@ document.getElementById("newGame").addEventListener("click", async () => {
     pool = words[length];
   }
 
-  word = pool[Math.floor(Math.random() * pool.length)].toLowerCase();
+  const entry = pool[Math.floor(Math.random() * pool.length)];
+  word = entry.word.toLowerCase();
+  currentDefinition = entry.definition;
   guessCount = 0;
   feedback.textContent = "";
   definition.textContent = "";
@@ -148,48 +150,7 @@ function getEncouragement(count) {
   return messages[count - 1] || "";
 }
 
-async function showDefinition(word) {
-  const langMap = { en: "en", es: "es", fr: "fr" };
-  const langCode = langMap[language] || "en";
+async function showDefinition() {
+  definition.textContent = `📖 ${currentDefinition}`;
 
-  const url = `https://${langCode}.wiktionary.org/w/api.php?action=query&format=json&prop=revisions&rvprop=content&titles=${word}&origin=*`;
-
-  try {
-    const res = await fetch(url);
-    const data = await res.json();
-    const pages = data.query.pages;
-    const page = Object.values(pages)[0];
-    const content = page.revisions?.[0]?.["*"];
-
-    if (!content) {
-      definition.textContent = "No definition found.";
-      return;
-    }
-
-    // Split into lines and filter for clean definition lines
-    const lines = content.split("\n");
-    const defLine = lines.find(line =>
-      line.startsWith("# ") &&
-      !line.includes("{{") &&
-      !line.includes("==") &&
-      !line.toLowerCase().includes("noun") &&
-      !line.toLowerCase().includes("verb") &&
-      !line.toLowerCase().includes("adjective")
-    );
-
-    if (defLine) {
-      const plain = defLine
-        .replace(/{{[^}]*}}/g, "")   // Remove templates
-        .replace(/\[\[|\]\]/g, "")   // Remove wiki links
-        .replace(/^#\s*/, "")        // Remove leading #
-        .replace(/\s+/g, " ")        // Normalize whitespace
-        .trim();
-
-      definition.textContent = `📖 ${plain}`;
-    } else {
-      definition.textContent = "Definition not found or too complex to parse.";
-    }
-  } catch {
-    definition.textContent = "Definition unavailable.";
-  }
 }
