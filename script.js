@@ -157,21 +157,29 @@ async function showDefinition(word) {
   };
   const langCode = langMap[language] || "en";
 
-  const url = `https://${langCode}.wiktionary.org/w/api.php?action=query&format=json&prop=extracts&titles=${word}&origin=*`;
+  const url = `https://${langCode}.wiktionary.org/w/api.php?action=query&format=json&prop=revisions&rvprop=content&titles=${word}&origin=*`;
 
   try {
     const res = await fetch(url);
     const data = await res.json();
     const pages = data.query.pages;
     const page = Object.values(pages)[0];
-    const extract = page.extract;
+    const content = page.revisions?.[0]?.["*"];
 
-    if (extract) {
-      // Strip HTML tags and truncate
-      const plainText = extract.replace(/<[^>]*>/g, "").split("\n")[0];
-      definition.textContent = `📖 ${plainText}`;
-    } else {
+    if (!content) {
       definition.textContent = "No definition found.";
+      return;
+    }
+
+    // Extract first definition line (very basic parsing)
+    const lines = content.split("\n");
+    const defLine = lines.find(line => line.startsWith("# ")) || lines.find(line => line.startsWith("{{voir|"));
+
+    if (defLine) {
+      const plain = defLine.replace(/[\[\]{}]|#|{{.*?}}/g, "").trim();
+      definition.textContent = `📖 ${plain}`;
+    } else {
+      definition.textContent = "Definition not found or too complex to parse.";
     }
   } catch {
     definition.textContent = "Definition unavailable.";
