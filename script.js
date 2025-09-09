@@ -85,7 +85,10 @@ function drawNextRow() {
           e.preventDefault();
         }
       }
-      if (e.key === "Enter") submitGuess();
+      if (e.key === "Enter") {
+        e.preventDefault();
+        submitGuess();
+      }
     });
 
     currentRow.appendChild(input);
@@ -100,7 +103,10 @@ function submitGuess() {
   const inputs = currentRow.querySelectorAll("input");
   const guess = Array.from(inputs).map(i => i.value.toLowerCase()).join("");
 
-  if (guess.length !== length || guess.includes("")) return;
+  if (guess.length !== length || guess.includes("")) {
+    feedback.textContent = "⚠️ Please fill all letters before submitting.";
+    return;
+  }
 
   guessCount++;
   for (let i = 0; i < length; i++) {
