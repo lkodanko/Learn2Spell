@@ -10,6 +10,11 @@ const feedback = document.getElementById("feedback");
 const defineBtn = document.getElementById("defineBtn");
 const definition = document.getElementById("definition");
 
+input.addEventListener("keypress", e => {
+  if (!/[a-zA-Z]/.test(e.key)) e.preventDefault();
+});
+
+
 document.getElementById("language").addEventListener("change", e => {
   language = e.target.value;
 });
