@@ -149,11 +149,7 @@ function getEncouragement(count) {
 }
 
 async function showDefinition(word) {
-  const langMap = {
-    en: "en",
-    es: "es",
-    fr: "fr"
-  };
+  const langMap = { en: "en", es: "es", fr: "fr" };
   const langCode = langMap[language] || "en";
 
   const url = `https://${langCode}.wiktionary.org/w/api.php?action=query&format=json&prop=revisions&rvprop=content&titles=${word}&origin=*`;
@@ -170,16 +166,25 @@ async function showDefinition(word) {
       return;
     }
 
-    // Extract first definition line (very basic parsing)
+    // Split into lines and filter for clean definition lines
     const lines = content.split("\n");
-    const defLine = lines.find(line => line.startsWith("# ")) || lines.find(line => line.startsWith("{{voir|"));
+    const defLine = lines.find(line =>
+      line.startsWith("# ") &&
+      !line.includes("{{") &&
+      !line.includes("==") &&
+      !line.toLowerCase().includes("noun") &&
+      !line.toLowerCase().includes("verb") &&
+      !line.toLowerCase().includes("adjective")
+    );
 
     if (defLine) {
       const plain = defLine
-  .replace(/{{[^}]*}}/g, "")   // Remove templates like {{lb|en|noun}}
-  .replace(/\[\[|\]\]/g, "")   // Remove wiki links
-  .replace(/^#\s*/, "")        // Remove leading #
-  .trim();
+        .replace(/{{[^}]*}}/g, "")   // Remove templates
+        .replace(/\[\[|\]\]/g, "")   // Remove wiki links
+        .replace(/^#\s*/, "")        // Remove leading #
+        .replace(/\s+/g, " ")        // Normalize whitespace
+        .trim();
+
       definition.textContent = `📖 ${plain}`;
     } else {
       definition.textContent = "Definition not found or too complex to parse.";
