@@ -10,6 +10,14 @@ const feedback = document.getElementById("feedback");
 const defineBtn = document.getElementById("defineBtn");
 const definition = document.getElementById("definition");
 
+input.addEventListener("keydown", e => {
+  const isLetter = /^[a-zA-Z]$/.test(e.key);
+  const isControl = ["Backspace", "Tab", "ArrowLeft", "ArrowRight", "Enter"].includes(e.key);
+
+  if (!isLetter && !isControl) {
+    e.preventDefault(); // Block non-letter, non-control keys
+  }
+});
 
 document.getElementById("language").addEventListener("change", e => {
   language = e.target.value;
