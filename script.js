@@ -3,6 +3,7 @@ let language = "en";
 let length = 5;
 let guessCount = 0;
 let currentRow = null;
+let customWords = null;
 
 const board = document.getElementById("board");
 const feedback = document.getElementById("feedback");
@@ -17,10 +18,31 @@ document.getElementById("length").addEventListener("change", e => {
   length = parseInt(e.target.value);
 });
 
+document.getElementById("uploadLibrary").addEventListener("change", e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      customWords = JSON.parse(reader.result);
+      feedback.textContent = "✅ Custom word list loaded.";
+    } catch {
+      feedback.textContent = "❌ Invalid JSON file.";
+    }
+  };
+  reader.readAsText(file);
+});
+
 document.getElementById("newGame").addEventListener("click", async () => {
-  const res = await fetch(`words-${language}.json`);
-  const words = await res.json();
-  const pool = words[length];
+  let pool;
+  if (customWords && customWords[length]) {
+    pool = customWords[length];
+  } else {
+    const res = await fetch(`words-${language}.json`);
+    const words = await res.json();
+    pool = words[length];
+  }
+
   word = pool[Math.floor(Math.random() * pool.length)].toLowerCase();
   guessCount = 0;
   feedback.textContent = "";
@@ -37,6 +59,7 @@ defineBtn.addEventListener("click", () => {
 function drawNextRow() {
   currentRow = document.createElement("div");
   currentRow.className = "row";
+
   for (let i = 0; i < length; i++) {
     const input = document.createElement("input");
     input.className = "tile";
@@ -45,18 +68,27 @@ function drawNextRow() {
     input.autocomplete = "off";
     input.spellcheck = false;
     input.inputMode = "latin";
+
     input.addEventListener("input", () => {
       input.value = input.value.toUpperCase().slice(0, 1);
       const next = input.nextElementSibling;
-      if (next) next.focus();
+      if (next && input.value) next.focus();
     });
+
+    input.addEventListener("keydown", e => {
+      if (e.key === "Backspace" && !input.value) {
+        const prev = input.previousElementSibling;
+        if (prev) {
+          prev.focus();
+          prev.value = "";
+          e.preventDefault();
+        }
+      }
+      if (e.key === "Enter") submitGuess();
+    });
+
     currentRow.appendChild(input);
   }
-
-  const submitBtn = document.createElement("button");
-  submitBtn.textContent = "Submit";
-  submitBtn.addEventListener("click", submitGuess);
-  currentRow.appendChild(submitBtn);
 
   board.appendChild(currentRow);
   currentRow.querySelector("input").focus();
