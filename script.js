@@ -34,6 +34,7 @@ document.getElementById("uploadLibrary").addEventListener("change", e => {
 });
 
 document.getElementById("newGame").addEventListener("click", async () => {
+  defineBtn.style.display = "inline";
   let pool;
   if (customWords && customWords[length]) {
     pool = customWords[length];
@@ -123,7 +124,7 @@ const guess = guessArray.join("");
     feedback.textContent = `🎉 You got it in ${guessCount} tries!`;
     showDefinition(word);
   } else {
-    if (guessCount <= 5) {
+    if (guess === word && guessCount <= 5) {
       feedback.textContent = getEncouragement(guessCount);
     }
     drawNextRow();
@@ -142,8 +143,12 @@ function getEncouragement(count) {
 }
 
 async function showDefinition(word) {
+  if (language !== "en") {
+    definition.textContent = "📖 Definitions are currently available only in English.";
+    return;
+  }
   try {
-    const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/${language}/${word}`);
+    const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
     const data = await res.json();
     const meaning = data[0]?.meanings[0]?.definitions[0]?.definition;
     definition.textContent = meaning ? `📖 ${meaning}` : "No definition found.";
