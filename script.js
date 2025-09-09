@@ -62,6 +62,11 @@ function drawNextRow() {
   currentRow = document.createElement("div");
   currentRow.className = "row";
 
+  const maxVisibleRows = 5;
+if (board.children.length >= maxVisibleRows) {
+  board.children[0].style.display = "none"; // Hide oldest
+}
+
   for (let i = 0; i < length; i++) {
     const input = document.createElement("input");
     input.className = "tile";
