@@ -23,7 +23,12 @@
 
     <button id="newGame">New Word</button>
     <button id="defineBtn" style="display:none;">📖 Define</button>
-    <input type="file" id="uploadLibrary" accept=".json" />
+    <label for="uploadLibrary" style="display:block; margin-top:10px;">
+  📁 Upload your own word list (JSON format with keys like "3", "4", "5", "6")
+</label>
+<input type="file" id="uploadLibrary" accept=".json" />
+<small>Example: { "5": ["grace", "faith", "truth"] }</small>
+
   </div>
 
   <div id="board"></div>
