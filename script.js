@@ -150,15 +150,29 @@ function getEncouragement(count) {
 }
 
 async function showDefinition(word) {
-  if (language !== "en") {
-    definition.textContent = "📖 Definitions are currently available only in English.";
-    return;
-  }
+  const langMap = {
+    en: "en",
+    es: "es",
+    fr: "fr"
+  };
+  const langCode = langMap[language] || "en";
+
+  const url = `https://${langCode}.wiktionary.org/w/api.php?action=query&format=json&prop=extracts&titles=${word}&origin=*`;
+
   try {
-    const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
+    const res = await fetch(url);
     const data = await res.json();
-    const meaning = data[0]?.meanings[0]?.definitions[0]?.definition;
-    definition.textContent = meaning ? `📖 ${meaning}` : "No definition found.";
+    const pages = data.query.pages;
+    const page = Object.values(pages)[0];
+    const extract = page.extract;
+
+    if (extract) {
+      // Strip HTML tags and truncate
+      const plainText = extract.replace(/<[^>]*>/g, "").split("\n")[0];
+      definition.textContent = `📖 ${plainText}`;
+    } else {
+      definition.textContent = "No definition found.";
+    }
   } catch {
     definition.textContent = "Definition unavailable.";
   }
