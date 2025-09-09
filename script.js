@@ -34,7 +34,6 @@ document.getElementById("uploadLibrary").addEventListener("change", e => {
 });
 
 document.getElementById("newGame").addEventListener("click", async () => {
-  defineBtn.style.display = "inline";
   let pool;
   if (customWords && customWords[length]) {
     pool = customWords[length];
@@ -48,7 +47,7 @@ document.getElementById("newGame").addEventListener("click", async () => {
   guessCount = 0;
   feedback.textContent = "";
   definition.textContent = "";
-  defineBtn.style.display = "none";
+  defineBtn.style.display = "inline";
   board.innerHTML = "";
   drawNextRow();
 });
