@@ -55,6 +55,7 @@ document.getElementById("newGame").addEventListener("click", async () => {
 defineBtn.addEventListener("click", () => {
   showDefinition(word);
 });
+document.getElementById("submitGuess").addEventListener("click", submitGuess);
 
 function drawNextRow() {
   currentRow = document.createElement("div");
@@ -95,6 +96,7 @@ function drawNextRow() {
 }
 
 function submitGuess() {
+  if (!currentRow) return;
   const inputs = currentRow.querySelectorAll("input");
   const guess = Array.from(inputs).map(i => i.value.toLowerCase()).join("");
 
@@ -109,15 +111,15 @@ function submitGuess() {
     else tile.classList.add("absent");
   }
 
+  defineBtn.style.display = "inline";
+
   if (guess === word) {
     feedback.textContent = `🎉 You got it in ${guessCount} tries!`;
     showDefinition(word);
-    defineBtn.style.display = "inline";
   } else {
     if (guessCount <= 5) {
       feedback.textContent = getEncouragement(guessCount);
     }
-    defineBtn.style.display = "inline";
     drawNextRow();
   }
 }
