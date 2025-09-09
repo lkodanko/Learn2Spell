@@ -10,10 +10,6 @@ const feedback = document.getElementById("feedback");
 const defineBtn = document.getElementById("defineBtn");
 const definition = document.getElementById("definition");
 
-input.addEventListener("input", () => {
-  input.value = input.value.replace(/[^a-zA-Z]/g, "").toUpperCase().slice(0, 1);
-});
-
 document.getElementById("language").addEventListener("change", e => {
   language = e.target.value;
 });
