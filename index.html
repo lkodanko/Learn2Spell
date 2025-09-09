@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Wordle Clone</title>
+  <title>Multilingual Wordle</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="controls">
     <select id="language">
       <option value="en">English</option>
-      <option value="fr">Français</option>
       <option value="es">Español</option>
+      <option value="fr">Français</option>
     </select>
 
     <select id="length">
@@ -22,14 +22,12 @@
     </select>
 
     <button id="newGame">New Word</button>
+    <button id="defineBtn" style="display:none;">📖 Define</button>
   </div>
 
   <div id="board"></div>
-  <input type="text" id="guessInput" maxlength="6" placeholder="Type your guess" />
-  <button id="submitGuess">Submit</button>
-
+  <div id="keyboard"></div>
   <div id="feedback"></div>
-  <button id="defineBtn" style="display:none;">📖 Define</button>
   <div id="definition"></div>
 
   <script src="script.js"></script>
