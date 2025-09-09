@@ -175,7 +175,11 @@ async function showDefinition(word) {
     const defLine = lines.find(line => line.startsWith("# ")) || lines.find(line => line.startsWith("{{voir|"));
 
     if (defLine) {
-      const plain = defLine.replace(/[\[\]{}]|#|{{.*?}}/g, "").trim();
+      const plain = defLine
+  .replace(/{{[^}]*}}/g, "")   // Remove templates like {{lb|en|noun}}
+  .replace(/\[\[|\]\]/g, "")   // Remove wiki links
+  .replace(/^#\s*/, "")        // Remove leading #
+  .trim();
       definition.textContent = `📖 ${plain}`;
     } else {
       definition.textContent = "Definition not found or too complex to parse.";
