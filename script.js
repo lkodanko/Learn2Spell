@@ -2,14 +2,12 @@ let word = "";
 let language = "en";
 let length = 5;
 let guessCount = 0;
-let currentRow = 0;
-let currentGuess = "";
+let currentRow = null;
 
 const board = document.getElementById("board");
 const feedback = document.getElementById("feedback");
 const defineBtn = document.getElementById("defineBtn");
 const definition = document.getElementById("definition");
-const keyboard = document.getElementById("keyboard");
 
 document.getElementById("language").addEventListener("change", e => {
   language = e.target.value;
@@ -25,98 +23,71 @@ document.getElementById("newGame").addEventListener("click", async () => {
   const pool = words[length];
   word = pool[Math.floor(Math.random() * pool.length)].toLowerCase();
   guessCount = 0;
-  currentRow = 0;
-  currentGuess = "";
   feedback.textContent = "";
   definition.textContent = "";
   defineBtn.style.display = "none";
-  drawBoard();
-  drawKeyboard();
+  board.innerHTML = "";
+  drawNextRow();
 });
 
 defineBtn.addEventListener("click", () => {
   showDefinition(word);
 });
 
-function drawBoard() {
-  board.innerHTML = "";
-  for (let i = 0; i < 10; i++) {
-    const row = document.createElement("div");
-    row.className = "row";
-    for (let j = 0; j < length; j++) {
-      const tile = document.createElement("div");
-      tile.className = "tile";
-      row.appendChild(tile);
-    }
-    board.appendChild(row);
-  }
-}
-
-function drawKeyboard() {
-  keyboard.innerHTML = "";
-  const keys = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  keys.split("").forEach(letter => {
-    const key = document.createElement("button");
-    key.className = "key";
-    key.textContent = letter;
-    key.addEventListener("click", () => handleKey(letter.toLowerCase()));
-    keyboard.appendChild(key);
-  });
-
-  const enter = document.createElement("button");
-  enter.className = "key";
-  enter.textContent = "⏎";
-  enter.addEventListener("click", submitGuess);
-  keyboard.appendChild(enter);
-
-  const del = document.createElement("button");
-  del.className = "key";
-  del.textContent = "⌫";
-  del.addEventListener("click", () => {
-    currentGuess = currentGuess.slice(0, -1);
-    updateRow();
-  });
-  keyboard.appendChild(del);
-}
-
-function handleKey(letter) {
-  if (currentGuess.length < length) {
-    currentGuess += letter;
-    updateRow();
-  }
-}
-
-function updateRow() {
-  const row = board.children[currentRow];
+function drawNextRow() {
+  currentRow = document.createElement("div");
+  currentRow.className = "row";
   for (let i = 0; i < length; i++) {
-    row.children[i].textContent = currentGuess[i] || "";
+    const input = document.createElement("input");
+    input.className = "tile";
+    input.maxLength = 1;
+    input.type = "text";
+    input.autocomplete = "off";
+    input.spellcheck = false;
+    input.inputMode = "latin";
+    input.addEventListener("input", () => {
+      input.value = input.value.toUpperCase().slice(0, 1);
+      const next = input.nextElementSibling;
+      if (next) next.focus();
+    });
+    currentRow.appendChild(input);
   }
+
+  const submitBtn = document.createElement("button");
+  submitBtn.textContent = "Submit";
+  submitBtn.addEventListener("click", submitGuess);
+  currentRow.appendChild(submitBtn);
+
+  board.appendChild(currentRow);
+  currentRow.querySelector("input").focus();
 }
 
 function submitGuess() {
-  if (currentGuess.length !== length) return;
+  const inputs = currentRow.querySelectorAll("input");
+  const guess = Array.from(inputs).map(i => i.value.toLowerCase()).join("");
 
-  const row = board.children[currentRow];
+  if (guess.length !== length || guess.includes("")) return;
+
+  guessCount++;
   for (let i = 0; i < length; i++) {
-    const tile = row.children[i];
-    const letter = currentGuess[i];
+    const tile = inputs[i];
+    const letter = guess[i];
     if (letter === word[i]) tile.classList.add("correct");
     else if (word.includes(letter)) tile.classList.add("present");
     else tile.classList.add("absent");
   }
 
-  guessCount++;
-  if (currentGuess === word) {
+  if (guess === word) {
     feedback.textContent = `🎉 You got it in ${guessCount} tries!`;
     showDefinition(word);
     defineBtn.style.display = "inline";
-  } else if (guessCount <= 5) {
-    feedback.textContent = getEncouragement(guessCount);
+  } else {
+    if (guessCount <= 5) {
+      feedback.textContent = getEncouragement(guessCount);
+    }
     defineBtn.style.display = "inline";
+    drawNextRow();
   }
-
-  currentRow++;
-  currentGuess = "";
 }
 
 function getEncouragement(count) {
