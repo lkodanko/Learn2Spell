@@ -101,12 +101,12 @@ function drawNextRow() {
 function submitGuess() {
   if (!currentRow) return;
   const inputs = currentRow.querySelectorAll("input");
-  const guess = Array.from(inputs).map(i => i.value.toLowerCase()).join("");
-
-  if (guess.length !== length || guess.includes("")) {
-    feedback.textContent = "⚠️ Please fill all letters before submitting.";
-    return;
-  }
+ const guessArray = Array.from(inputs).map(i => i.value.trim().toLowerCase());
+if (guessArray.some(val => val === "") || guessArray.length !== length) {
+  feedback.textContent = "⚠️ Please fill all letters before submitting.";
+  return;
+}
+const guess = guessArray.join("");
 
   guessCount++;
   for (let i = 0; i < length; i++) {
