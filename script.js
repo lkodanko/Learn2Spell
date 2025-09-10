@@ -152,5 +152,6 @@ function getEncouragement(count) {
 
 async function showDefinition() {
   definition.textContent = `📖 ${currentDefinition}`;
+   currentRow.querySelector("input").focus();
 
 }
